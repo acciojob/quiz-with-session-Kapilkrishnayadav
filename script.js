@@ -1,4 +1,4 @@
- const questions = [
+  const questions = [
         {
           question: "What is the capital of France?",
           choices: ["Paris", "London", "Berlin", "Madrid"],
@@ -35,7 +35,9 @@
           q.choices.forEach((choice, j) => {
             const inputId = `q${i}_${j}`;
             html += `
-              <label for="${inputId}">${String.fromCharCode(97 + j)}:- ${choice}</label>
+              <label for="${inputId}">${String.fromCharCode(
+              97 + j
+            )}:- ${choice}</label>
               <input onclick="handle(event)" type="radio" name="question-${i}" id="${inputId}" value="${choice}" />
             `;
           });
@@ -47,6 +49,7 @@
       function handle(event) {
         const index = Number(event.target.closest(".question").dataset.number);
         ans[index] = event.target.value;
+        event.target.setAttribute("checked", "true");
         sessionStorage.setItem("progress", JSON.stringify(ans));
       }
 
@@ -55,8 +58,11 @@
         progress.forEach((value, i) => {
           if (value) {
             const inputs = document.querySelectorAll(`[name="question-${i}"]`);
-            inputs.forEach(input => {
-              if (input.value === value) input.checked = true;
+            inputs.forEach((input) => {
+              if (input.value === value) {
+                input.checked = true;
+                input.setAttribute("checked", "true");;
+              }
             });
             ans[i] = value;
           }
@@ -78,5 +84,7 @@
 
       const savedScore = localStorage.getItem("score");
       if (savedScore) {
-        document.getElementById("score").innerText = `Your score is ${savedScore} out of ${questions.length}.`;
+        document.getElementById(
+          "score"
+        ).innerText = `Your score is ${savedScore} out of ${questions.length}.`;
       }
