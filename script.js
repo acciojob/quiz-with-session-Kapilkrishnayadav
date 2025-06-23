@@ -1,21 +1,4 @@
-let ans = Array(5).fill(0);
-      function handle(event) {
-          let allOptions = event.target.parentNode.querySelectorAll("input");
-          allOptions.forEach((elem, i) => {
-              elem.checked = false;
-            });
-            // let index=Number(event.target.parentNode.dataset.number);
-            // console.log(index)
-            // ans[index]="hello";
-
-            ans[Number(event.target.parentNode.dataset.number)]=event.target.value;
-            console.log(ans);
-        event.target.checked = true;
-        sessionStorage.setItem("progress", JSON.stringify(ans));
-      }
-      // Do not change code below this line
-      // This code will just display the questions to the screen
-      const questions = [
+const questions = [
         {
           question: "What is the capital of France?",
           choices: ["Paris", "London", "Berlin", "Madrid"],
@@ -43,52 +26,69 @@ let ans = Array(5).fill(0);
         },
       ];
 
-      // Display the quiz questions and choices
-      let questionsDiv = document.querySelector("#questions");
+      const ans = Array(questions.length).fill(0);
+      const questionsDiv = document.getElementById("questions");
+
       function renderQuestions() {
-        questions.forEach((elem, i) => {
-          questionsDiv.innerHTML += `
-     <div data-number=${i} class="question">
-        <div  >${i + 1}. ${questions[i].question}?</div>
-        
-        ${questions[i].choices
-        .map((elem, j) => {
-            return `<label for="${questions[i].choices[j]}">${String.fromCharCode(
-                "a".charCodeAt(0) + j
-            )}:- ${questions[i].choices[j]}</label>
-            <input onclick="handle(event)" type="checkbox" name="option1" id="${
-                questions[i].choices[j]
-                }" value="${questions[i].choices[j]}" />`;
-            })
-            .join("")}
-            </div>`;
-        });
-    }
-    renderQuestions();
-    if (sessionStorage.getItem("progress")) {
-        let x = JSON.parse(sessionStorage.getItem("progress"));
-        // document.getElementsByClassName("question");
-        console.log(x);
-        ans = [...x];
-        x.forEach((elem, i) => {
-          // console.log(elem);
-          if (elem) document.getElementById(elem).checked = true;
-          console.log(document.getElementById(elem));
-          // document.getElementById(elem)
+        questions.forEach((q, i) => {
+          let questionHtml = `<div data-number="${i}" class="question">
+              <div>${i + 1}. ${q.question}</div>`;
+
+          q.choices.forEach((choice, j) => {
+            const inputId = `q${i}_${j}`;
+            questionHtml += `
+              <label for="${inputId}">${String.fromCharCode(
+              "a".charCodeAt(0) + j
+            )}:- ${choice}</label>
+              <input onclick="handle(event)" type="checkbox" name="question-${i}" id="${inputId}" value="${choice}" />
+            `;
+          });
+
+          questionHtml += `</div>`;
+          questionsDiv.innerHTML += questionHtml;
         });
       }
-      function handleSubmit(event)
-      {
-        let score=0;
-        ans.forEach((elem,i)=>{
-            console.log(elem);
-            console.log(questions[i].answer)
-            if(elem==questions[i].answer)
-            score++;
-        })
-        // console.log(score);
-        document.getElementById("score").innerText=score;
-        localStorage.setItem("score",JSON.stringify( score));
+
+      function handle(event) {
+        const parentDiv = event.target.closest(".question");
+        const inputs = parentDiv.querySelectorAll("input");
+        inputs.forEach((inp) => (inp.checked = false));
+        event.target.checked = true;
+
+        const index = Number(parentDiv.dataset.number);
+        ans[index] = event.target.value;
+
+        sessionStorage.setItem("progress", JSON.stringify(ans));
       }
-document.getElementById("score").innerText=JSON.parse(localStorage.getItem("score"));
-      
+
+      function restoreProgress() {
+        const progress = sessionStorage.getItem("progress");
+        if (progress) {
+          const storedAns = JSON.parse(progress);
+          storedAns.forEach((value, i) => {
+            if (value) {
+              const checkbox = Array.from(
+                document.querySelectorAll(`[name="question-${i}"]`)
+              ).find((input) => input.value === value);
+              if (checkbox) checkbox.checked = true;
+              ans[i] = value;
+            }
+          });
+        }
+      }
+
+      function handleSubmit(event) {
+        let score = 0;
+        ans.forEach((selected, i) => {
+          if (selected === questions[i].answer) score++;
+        });
+
+        document.getElementById("score").innerText = `Score: ${score}`;
+        localStorage.setItem("score", JSON.stringify(score));
+      }
+
+      renderQuestions();
+      restoreProgress();
+
+      document.getElementById("score").innerText =
+        "Score: " + (JSON.parse(localStorage.getItem("score")) || 0);
