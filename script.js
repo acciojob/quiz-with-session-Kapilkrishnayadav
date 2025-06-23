@@ -50,7 +50,7 @@
         questions.forEach((elem, i) => {
           questionsDiv.innerHTML += `
      <div data-number=${i} class="question">
-        <div  id="questions">${i + 1}. ${questions[i].question}?</div>
+        <div>${i + 1}. ${questions[i].question}?</div>
         
         ${questions[i].choices
         .map((elem, j) => {
