@@ -54,11 +54,11 @@
         
         ${questions[i].choices
         .map((elem, j) => {
-            return `<label for=${questions[i].choices[j]}>${String.fromCharCode(
+            return `<label for="${questions[i].choices[j]}">${String.fromCharCode(
                 "a".charCodeAt(0) + j
             )}:- ${questions[i].choices[j]}</label>
-            <input onclick="handle(event)" type="checkbox" name="option1" id=${
-                questions[i].choices[j]
+            <input onclick="handle(event)" type="checkbox" name="option1" id="${
+                questions[i].choices[j]"
                 } value=${questions[i].choices[j]} />`;
             })
             .join("")}
