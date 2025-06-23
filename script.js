@@ -1,5 +1,4 @@
-
-      let ans = Array(5).fill(0);
+let ans = Array(5).fill(0);
       function handle(event) {
           let allOptions = event.target.parentNode.querySelectorAll("input");
           allOptions.forEach((elem, i) => {
@@ -50,7 +49,7 @@
         questions.forEach((elem, i) => {
           questionsDiv.innerHTML += `
      <div data-number=${i} class="question">
-        <div>${i + 1}. ${questions[i].question}?</div>
+        <div  >${i + 1}. ${questions[i].question}?</div>
         
         ${questions[i].choices
         .map((elem, j) => {
@@ -58,8 +57,8 @@
                 "a".charCodeAt(0) + j
             )}:- ${questions[i].choices[j]}</label>
             <input onclick="handle(event)" type="checkbox" name="option1" id="${
-                questions[i].choices[j]"
-                } value=${questions[i].choices[j]} />`;
+                questions[i].choices[j]
+                }" value="${questions[i].choices[j]}" />`;
             })
             .join("")}
             </div>`;
