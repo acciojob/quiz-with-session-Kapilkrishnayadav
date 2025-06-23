@@ -1,4 +1,4 @@
-const questions = [
+ const questions = [
         {
           question: "What is the capital of France?",
           choices: ["Paris", "London", "Berlin", "Madrid"],
@@ -26,55 +26,41 @@ const questions = [
         },
       ];
 
-      const ans = Array(questions.length).fill(0);
-      const questionsDiv = document.getElementById("questions");
+      const ans = Array(5).fill(null);
 
       function renderQuestions() {
+        const questionsDiv = document.getElementById("questions");
         questions.forEach((q, i) => {
-          let questionHtml = `<div data-number="${i}" class="question">
-              <div>${i + 1}. ${q.question}</div>`;
-
+          let html = `<div data-number="${i}" class="question"><div>${q.question}?</div>`;
           q.choices.forEach((choice, j) => {
             const inputId = `q${i}_${j}`;
-            questionHtml += `
-              <label for="${inputId}">${String.fromCharCode(
-              "a".charCodeAt(0) + j
-            )}:- ${choice}</label>
-              <input onclick="handle(event)" type="checkbox" name="question-${i}" id="${inputId}" value="${choice}" />
+            html += `
+              <label for="${inputId}">${String.fromCharCode(97 + j)}:- ${choice}</label>
+              <input onclick="handle(event)" type="radio" name="question-${i}" id="${inputId}" value="${choice}" />
             `;
           });
-
-          questionHtml += `</div>`;
-          questionsDiv.innerHTML += questionHtml;
+          html += "</div>";
+          questionsDiv.innerHTML += html;
         });
       }
 
       function handle(event) {
-        const parentDiv = event.target.closest(".question");
-        const inputs = parentDiv.querySelectorAll("input");
-        inputs.forEach((inp) => (inp.checked = false));
-        event.target.checked = true;
-
-        const index = Number(parentDiv.dataset.number);
+        const index = Number(event.target.closest(".question").dataset.number);
         ans[index] = event.target.value;
-
         sessionStorage.setItem("progress", JSON.stringify(ans));
       }
 
       function restoreProgress() {
-        const progress = sessionStorage.getItem("progress");
-        if (progress) {
-          const storedAns = JSON.parse(progress);
-          storedAns.forEach((value, i) => {
-            if (value) {
-              const checkbox = Array.from(
-                document.querySelectorAll(`[name="question-${i}"]`)
-              ).find((input) => input.value === value);
-              if (checkbox) checkbox.checked = true;
-              ans[i] = value;
-            }
-          });
-        }
+        const progress = JSON.parse(sessionStorage.getItem("progress") || "[]");
+        progress.forEach((value, i) => {
+          if (value) {
+            const inputs = document.querySelectorAll(`[name="question-${i}"]`);
+            inputs.forEach(input => {
+              if (input.value === value) input.checked = true;
+            });
+            ans[i] = value;
+          }
+        });
       }
 
       function handleSubmit(event) {
@@ -82,13 +68,15 @@ const questions = [
         ans.forEach((selected, i) => {
           if (selected === questions[i].answer) score++;
         });
-
-        document.getElementById("score").innerText = `Score: ${score}`;
-        localStorage.setItem("score", JSON.stringify(score));
+        const result = `Your score is ${score} out of ${questions.length}.`;
+        document.getElementById("score").innerText = result;
+        localStorage.setItem("score", score);
       }
 
       renderQuestions();
       restoreProgress();
 
-      document.getElementById("score").innerText =
-        "Score: " + (JSON.parse(localStorage.getItem("score")) || 0);
+      const savedScore = localStorage.getItem("score");
+      if (savedScore) {
+        document.getElementById("score").innerText = `Your score is ${savedScore} out of ${questions.length}.`;
+      }
