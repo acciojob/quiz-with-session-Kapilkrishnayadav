@@ -45,7 +45,7 @@
       ];
 
       // Display the quiz questions and choices
-      let questionsDiv = document.querySelector(".questions");
+      let questionsDiv = document.querySelector("#questions");
       function renderQuestions() {
         questions.forEach((elem, i) => {
           questionsDiv.innerHTML += `
